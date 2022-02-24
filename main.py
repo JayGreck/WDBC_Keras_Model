@@ -27,7 +27,7 @@ model = Sequential([
     Dense(units = 2, activation='sigmoid')
 ])
 #print(model.summary())
-
+#sasa
 
 # ------- PREPEARE MODEL -------
 model.compile(optimizer=Adam(learning_rate=0.001), loss='sparse_categorical_crossentropy', metrics=['accuracy', tf.keras.metrics.MeanSquaredError()])
