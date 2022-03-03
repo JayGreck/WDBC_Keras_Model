@@ -13,27 +13,18 @@ preprocess = Preprocess_Data()
 
 X_train, X_test, y_train, y_test = preprocess.get_dataframe()
 
-# ------- SELECTING GPU INSTEAD OF CPU FOR COMPUTATIONS -------
-# physical_devices = tf.config.experimental.list_physical_devices('GPU')
-# print("Num GPUs Available: ", len(physical_devices))
-# if len(physical_devices) != 0:
-#     tf.config.experimental.set_memory_growth(physical_devices[0], True)
-
 # ------- CREATE NEURAL NETWORK MODEL -------
 model = Sequential([
-    Dense(units = 5, input_shape=(0,30), activation='sigmoid'),
-    Dense(units = 5, activation='sigmoid'),
-    Dense(units = 5, activation='sigmoid'),
-    Dense(units = 2, activation='sigmoid')
+    Dense(units = 5, input_shape=(0,30), activation='relu'), # Second layer, first hidden layer
+    Dense(units = 2, activation='softmax') # Output layer
 ])
-#print(model.summary())
-#sasa
+
 
 # ------- PREPEARE MODEL -------
 model.compile(optimizer=Adam(learning_rate=0.001), loss='sparse_categorical_crossentropy', metrics=['accuracy', tf.keras.metrics.MeanSquaredError()])
 
 # ------- TRAIN/ VALIDATION NEURAL NETWORK -------
-test = model.fit(x=X_train, y=X_test, validation_split=0.3, batch_size=10, epochs=2000, shuffle=True, verbose=2)
+test = model.fit(x=X_train, y=X_test, validation_split=0.3, batch_size=7, epochs=1000, shuffle=True, verbose=2)
 
 
 # ------- TEST THE MODEL -------
