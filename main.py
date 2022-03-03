@@ -1,34 +1,43 @@
+from json import load
 from Preprocess_Data import Preprocess_Data
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.models import load_model
 from sklearn.metrics import confusion_matrix, precision_score, mean_squared_error, accuracy_score
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+import os.path
 
+# If train_model == False, a model will be loaded
+train_model = True
 
 preprocess = Preprocess_Data()
-
 X_train, X_test, y_train, y_test = preprocess.get_dataframe()
 
-# ------- CREATE NEURAL NETWORK MODEL -------
-model = Sequential([
-    Dense(units = 5, input_shape=(0,30), activation='relu'), # Second layer, first hidden layer
-    Dense(units = 2, activation='softmax') # Output layer
-])
+if train_model:
+    
+
+    # ------- CREATE NEURAL NETWORK MODEL -------
+    model = Sequential([
+        Dense(units = 5, input_shape=(0,30), activation='relu'), # Second layer, first hidden layer
+        Dense(units = 5, input_shape=(0,30), activation='relu'),
+        Dense(units = 2, activation='softmax') # Output layer
+    ])
 
 
-# ------- PREPEARE MODEL -------
-model.compile(optimizer=Adam(learning_rate=0.001), loss='sparse_categorical_crossentropy', metrics=['accuracy', tf.keras.metrics.MeanSquaredError()])
+    # ------- PREPEARE MODEL -------
+    model.compile(optimizer=Adam(learning_rate=0.001), loss='sparse_categorical_crossentropy', metrics=['accuracy', tf.keras.metrics.MeanSquaredError()])
 
-# ------- TRAIN/ VALIDATION NEURAL NETWORK -------
-test = model.fit(x=X_train, y=X_test, validation_split=0.3, batch_size=7, epochs=1000, shuffle=True, verbose=2)
-
+    # ------- TRAIN/ VALIDATION NEURAL NETWORK -------
+    test = model.fit(x=X_train, y=X_test, validation_split=0.3, batch_size=30, epochs=1000, shuffle=True, verbose=2)
+else:
+    model = load_model('models/model.h5')
 
 # ------- TEST THE MODEL -------
-predictions = model.predict(x=y_train, batch_size=10, verbose=0)
+predictions = model.predict(x=y_train, batch_size=7)
 rounded_predictions = np.argmax(predictions, axis=-1)
 
 # ------- CONFUSION MATRIX -------
@@ -56,3 +65,7 @@ print("Accuracy: " + str(accuracy) + " %")
 classes = ['Benign', 'Malignant']
 sns.heatmap(cm, annot=True, cmap='Blues', fmt='g')
 plt.show()
+
+# ------- SAVE THE MODEL -------
+if os.path.isfile('models/model.h5') is False and accuracy >= 0.99:
+    model.save('models/model.h5')
