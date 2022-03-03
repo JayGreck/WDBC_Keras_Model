@@ -1,4 +1,3 @@
-from json import load
 from Preprocess_Data import Preprocess_Data
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
